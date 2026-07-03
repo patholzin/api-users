@@ -2,6 +2,8 @@ const express = require('express');
 
 const router = express.Router();
 
+const verificarToken = require('../middleware/auth');
+
 const {
 
     getUsers,
@@ -13,18 +15,17 @@ const {
 } = require('../controllers/usersController');
 
 // GET Todos
-router.get('/', getUsers);
+router.get('/', verificarToken, getUsers);
 
 // GET por ID
-router.get('/:id', getUserById);
+router.get('/:id', verificarToken, getUserById);
 
 // POST
-router.post('/', createUser);
+router.post('/', verificarToken, createUser);
 
 // PUT
-router.put('/:id', updateUser);
+router.put('/:id', verificarToken, updateUser);
 
 // DELETE
-router.delete('/:id', deleteUser);
-
+router.delete('/:id', verificarToken, deleteUser);
 module.exports = router;
