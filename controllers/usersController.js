@@ -1,104 +1,126 @@
 const User = require('../models/User');
 
 // GET - Todos los usuarios
-const getUsers = (req, res) => {
-    res.json(users);
+const getUsers = async (req, res) => {
+
+    try {
+
+        const users = await User.find();
+
+        res.json(users);
+
+    } catch (error) {
+
+        res.status(500).json({ mensaje: error.message });
+
+    }
+
 };
 
 // GET - Usuario por ID
-const getUserById = (req, res) => {
+const getUserById = async (req, res) => {
 
-    const id = parseInt(req.params.id);
+    try {
 
-    const user = users.find(u => u.id === id);
+        const user = await User.findById(req.params.id);
 
-    if (!user) {
-        return res.status(404).json({
-            mensaje: "Usuario no encontrado"
-        });
+        if (!user) {
+
+            return res.status(404).json({
+                mensaje: "Usuario no encontrado"
+            });
+
+        }
+
+        res.json(user);
+
+    } catch (error) {
+
+        res.status(500).json({ mensaje: error.message });
+
     }
 
-    res.json(user);
 };
 
 // POST - Crear usuario
-const createUser = (req, res) => {
+const createUser = async (req, res) => {
 
-    const { usuario, password, rol } = req.body;
+    try {
 
-    const nuevoUsuario = {
+        const nuevoUsuario = new User(req.body);
 
-        id: users.length + 1,
-        usuario,
-        password,
-        rol
+        const usuarioGuardado = await nuevoUsuario.save();
 
-    };
+        res.status(201).json(usuarioGuardado);
 
-    users.push(nuevoUsuario);
+    } catch (error) {
 
-    res.status(201).json({
-        mensaje: "Usuario creado",
-        usuario: nuevoUsuario
-    });
+        res.status(500).json({ mensaje: error.message });
+
+    }
 
 };
 
 // PUT - Actualizar usuario
-const updateUser = (req, res) => {
+const updateUser = async (req, res) => {
 
-    const id = parseInt(req.params.id);
+    try {
 
-    const user = users.find(u => u.id === id);
+        const usuarioActualizado = await User.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        );
 
-    if (!user) {
-        return res.status(404).json({
-            mensaje: "Usuario no encontrado"
-        });
+        if (!usuarioActualizado) {
+
+            return res.status(404).json({
+                mensaje: "Usuario no encontrado"
+            });
+
+        }
+
+        res.json(usuarioActualizado);
+
+    } catch (error) {
+
+        res.status(500).json({ mensaje: error.message });
+
     }
-
-    const { usuario, password, rol } = req.body;
-
-    user.usuario = usuario;
-    user.password = password;
-    user.rol = rol;
-
-    res.json({
-        mensaje: "Usuario actualizado",
-        usuario: user
-    });
 
 };
 
 // DELETE - Eliminar usuario
-const deleteUser = (req, res) => {
+const deleteUser = async (req, res) => {
 
-    const id = parseInt(req.params.id);
+    try {
 
-    const index = users.findIndex(u => u.id === id);
+        const usuarioEliminado = await User.findByIdAndDelete(req.params.id);
 
-    if (index === -1) {
+        if (!usuarioEliminado) {
 
-        return res.status(404).json({
-            mensaje: "Usuario no encontrado"
+            return res.status(404).json({
+                mensaje: "Usuario no encontrado"
+            });
+
+        }
+
+        res.json({
+            mensaje: "Usuario eliminado correctamente"
         });
 
+    } catch (error) {
+
+        res.status(500).json({ mensaje: error.message });
+
     }
-
-    users.splice(index, 1);
-
-    res.json({
-        mensaje: "Usuario eliminado"
-    });
 
 };
 
 module.exports = {
-
     getUsers,
     getUserById,
     createUser,
     updateUser,
     deleteUser
-
 };
