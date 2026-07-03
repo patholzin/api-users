@@ -1,8 +1,11 @@
 const express = require('express');
 const conectarDB = require('./config/database');
+
 conectarDB();
 
 const app = express();
+app.use(cors());
+const cors = require('cors');
 
 const PORT = 5000;
 const HOST = '0.0.0.0';
