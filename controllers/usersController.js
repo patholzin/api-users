@@ -1,4 +1,4 @@
-const users = require('../data/users');
+const User = require('../models/User');
 
 // GET - Todos los usuarios
 const getUsers = (req, res) => {
